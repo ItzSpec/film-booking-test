@@ -48,10 +48,7 @@
 
           <div class="movie-card">
             <div class="movie-poster">
-              <img
-                src="THE_RAID-REDEMPTION.jpg"
-                alt="The Raid: Redemption"
-              />
+              <img src="THE_RAID-REDEMPTION.jpg" alt="The Raid: Redemption" />
             </div>
             <div class="movie-info">
               <h3 class="movie-title">The Raid: Redemption</h3>
@@ -60,6 +57,158 @@
           </div>
         </div>
       </div>
+
+      <div
+        id="pemesanan_tiket"
+        class="order-form-container"
+        style="display: none"
+      >
+        <div class="form-wrapper">
+          <h2 class="form-title">Pemesanan Tiket</h2>
+
+          <form id="orderForm" class="order-form">
+            <div class="form-group">
+              <label for="nama">Nama</label>
+              <input
+                type="text"
+                id="nama"
+                name="nama"
+                placeholder="Masukkan nama Anda"
+              />
+              <span class="error-message" id="nama-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="example@email.com"
+              />
+              <span class="error-message" id="email-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="film">Pilihan Film</label>
+              <select id="film" name="film">
+                <option value="">-- Pilih Film --</option>
+                <option value="Interstellar">Interstellar - Rp 50.000</option>
+                <option value="Oppenheimer">Oppenheimer - Rp 45.000</option>
+                <option value="The Raid: Redemption">
+                  The Raid: Redemption - Rp 40.000
+                </option>
+              </select>
+              <span class="error-message" id="film-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="jumlah">Jumlah Tiket</label>
+              <input
+                type="number"
+                id="jumlah"
+                name="jumlah"
+                min="1"
+                max="10"
+                placeholder="1-10"
+              />
+              <span class="error-message" id="jumlah-error"></span>
+            </div>
+
+            <div class="price-preview">
+              <p>Total Harga: <span id="total-harga">Rp 0</span></p>
+            </div>
+
+            <button type="submit" class="submit-button">Pesan</button>
+          </form>
+        </div>
+      </div>
     </main>
+
+    <script>
+      const prices = {
+        Interstellar: 50000,
+        Oppenheimer: 45000,
+        'The Raid: Redemption': 40000,
+      };
+
+      document.querySelectorAll('.book-button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const title = btn
+            .closest('.movie-card')
+            .querySelector('.movie-title').textContent;
+          document.getElementById('pemesanan_tiket').style.display = 'block';
+          document
+            .getElementById('pemesanan_tiket')
+            .scrollIntoView({ behavior: 'smooth' });
+          document.getElementById('film').value = title;
+          updatePrice();
+        });
+      });
+
+      function updatePrice() {
+        const film = document.getElementById('film').value;
+        const jumlah = parseInt(document.getElementById('jumlah').value) || 0;
+        const total = film && prices[film] ? prices[film] * jumlah : 0;
+        document.getElementById(
+          'total-harga'
+        ).textContent = `Rp ${total.toLocaleString('id-ID')}`;
+      }
+
+      document.getElementById('film').addEventListener('change', updatePrice);
+      document.getElementById('jumlah').addEventListener('input', updatePrice);
+
+      document
+        .getElementById('orderForm')
+        .addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const nama = document.getElementById('nama').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const film = document.getElementById('film').value;
+          const jumlah = parseInt(document.getElementById('jumlah').value);
+
+          document.getElementById('nama-error').style.display = nama
+            ? 'none'
+            : 'block';
+          document.getElementById('nama-error').textContent = nama
+            ? ''
+            : 'Nama tidak boleh kosong';
+
+          const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+          document.getElementById('email-error').style.display =
+            email && emailValid ? 'none' : 'block';
+          document.getElementById('email-error').textContent = !email
+            ? 'Email tidak boleh kosong'
+            : !emailValid
+            ? 'Email harus dalam format yang benar'
+            : '';
+
+          document.getElementById('film-error').style.display = film
+            ? 'none'
+            : 'block';
+          document.getElementById('film-error').textContent = film
+            ? ''
+            : 'Pilih film terlebih dahulu';
+
+          const jumlahValid = jumlah >= 1 && jumlah <= 10;
+          document.getElementById('jumlah-error').style.display = jumlahValid
+            ? 'none'
+            : 'block';
+          document.getElementById('jumlah-error').textContent = jumlahValid
+            ? ''
+            : 'Jumlah tiket minimal 1 dan maksimal 10';
+
+          if (nama && email && emailValid && film && jumlahValid) {
+            alert(
+              `Pemesanan berhasil!\nNama: ${nama}\nEmail: ${email}\nFilm: ${film}\nJumlah: ${jumlah}\nTotal: ${
+                document.getElementById('total-harga').textContent
+              }`
+            );
+            this.reset();
+            updatePrice();
+          }
+        });
+    </script>
   </body>
 </html>
